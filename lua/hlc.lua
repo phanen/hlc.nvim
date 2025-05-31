@@ -12,7 +12,7 @@ local bufstates = {}
 local ignored_ft = { mason = true, lazy = true }
 local opts = {
   timeout = 150,
-  hlgroup = 'DiffAdded',
+  hlgroup = 'DiffAdd',
   ignore = function(buf)
     local bo = vim.bo[buf]
     return bo.buftype ~= '' and not bo.modifiable or ignored_ft[bo.ft]
@@ -29,6 +29,7 @@ local function on_bytes(_, bufnr, _, start_row, start_col, _, _, _, _, new_end_r
   local end_row = start_row + new_end_row
   local end_col = start_col + new_end_col
   if end_row >= num_lines then end_col = #api.nvim_buf_get_lines(0, -2, -1, false)[1] end
+  if start_row == start_col and end_row == end_col then return end
   vim.schedule(function()
     if bufstate.cancel then bufstate.cancel() end
     bufstate.timer, bufstate.cancel = vim.hl.range(
@@ -57,6 +58,7 @@ end
 local M = {}
 
 function M.enable()
+  if not vim.hl then return end
   api.nvim_create_autocmd({ 'BufEnter' }, {
     pattern = '*',
     callback = function(ev) attach(ev.buf) end,
