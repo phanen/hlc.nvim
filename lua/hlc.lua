@@ -15,7 +15,7 @@ local opts = {
   hlgroup = 'DiffAdd',
   ignore = function(buf)
     local bo = vim.bo[buf]
-    return bo.buftype ~= '' and not bo.modifiable or ignored_ft[bo.ft]
+    return bo.buftype ~= '' or not bo.modifiable or ignored_ft[bo.ft]
   end,
 }
 
