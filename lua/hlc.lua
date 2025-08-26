@@ -32,13 +32,17 @@ local function on_bytes(_, bufnr, _, start_row, start_col, _, _, _, _, new_end_r
   if start_row == end_row and start_col == end_col then return end
   vim.schedule(function()
     if bufstate.cancel then bufstate.cancel() end
-    bufstate.timer, bufstate.cancel = vim.hl.range(
-      bufnr,
-      ns_id,
-      opts.hlgroup,
-      { start_row, start_col },
-      { end_row, end_col },
-      { timeout = opts.timeout }
+    bufstate.timer, bufstate.cancel = vim.F.npcall(
+      function()
+        return vim.hl.range(
+          bufnr,
+          ns_id,
+          opts.hlgroup,
+          { start_row, start_col },
+          { end_row, end_col },
+          { timeout = opts.timeout }
+        )
+      end
     )
   end)
 end
